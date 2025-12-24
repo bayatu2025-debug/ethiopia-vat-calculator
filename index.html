@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ethiopia VAT Calculator & Invoice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+    .vat-card {
+      max-width: 480px;
+      margin: 60px auto;
+      border-radius: 12px;
+    }
+    .invoice {
+      display: none;
+      margin-top: 20px;
+      border: 1px dashed #ccc;
+      padding: 15px;
+      background: #fff;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .invoice, .invoice * {
+        visibility: visible;
+      }
+      .invoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card vat-card shadow">
+    <div class="card-body">
+
+      <h4 class="text-center">🇪🇹 Ethiopia VAT Calculator</h4>
+      <p class="text-center text-muted">VAT Rate: <strong>15%</strong></p>
+
+      <div class="mb-2">
+        <label class="form-label">Business Name</label>
+        <input type="text" id="business" class="form-control" placeholder="Your Business Name">
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Amount (ETB)</label>
+        <input type="number" id="amount" class="form-control" placeholder="Enter amount">
+      </div>
+
+      <div class="d-grid gap-2 mt-3">
+        <button class="btn btn-primary" onclick="addVAT()">➕ Add VAT & Generate Invoice</button>
+        <button class="btn btn-outline-primary" onclick="removeVAT()">➖ Remove VAT & Generate Invoice</button>
+      </div>
+
+      <!-- INVOICE -->
+      <div id="invoice" class="invoice mt-4">
+        <h5 class="text-center mb-3">VAT INVOICE</h5>
+
+        <p><strong>Business:</strong> <span id="invBusiness"></span></p>
+        <p><strong>Invoice No:</strong> <span id="invNumber"></span></p>
+        <p><strong>Date:</strong> <span id="invDate"></span></p>
+
+        <hr>
+
+        <p><strong>Amount:</strong> <span id="invAmount"></span> Br</p>
+        <p><strong>VAT (15%):</strong> <span id="invVAT"></span> Br</p>
+        <p><strong id="priceLabel"></strong>: <span id="invTotal"></span> Br</p>
+
+        <hr>
+
+        <p class="text-center fw-bold">Thank You</p>
+
+        <div class="d-grid">
+          <button class="btn btn-success mt-2" onclick="window.print()">🖨 Print Invoice</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const VAT = 15;
+
+  function generateInvoice(business, amount, vat, total, label) {
+    document.getElementById("invoice").style.display = "block";
+    document.getElementById("invBusiness").innerText = business || "N/A";
+    document.getElementById("invAmount").innerText = amount.toFixed(2);
+    document.getElementById("invVAT").innerText = vat.toFixed(2);
+    document.getElementById("invTotal").innerText = total.toFixed(2);
+    document.getElementById("priceLabel").innerText = label;
+
+    document.getElementById("invDate").innerText =
+      new Date().toLocaleDateString();
+
+    document.getElementById("invNumber").innerText =
+      "INV-" + Math.floor(Math.random() * 1000000);
+  }
+
+  function addVAT() {
+    let amount = Number(document.getElementById("amount").value);
+    let business = document.getElementById("business").value;
+
+    if (!amount) return alert("Enter amount");
+
+    let vat = (amount * VAT) / 100;
+    let total = amount + vat;
+
+    generateInvoice(business, amount, vat, total, "Total Price");
+  }
+
+  function removeVAT() {
+    let amount = Number(document.getElementById("amount").value);
+    let business = document.getElementById("business").value;
+
+    if (!amount) return alert("Enter amount");
+
+    let net = amount * 100 / (100 + VAT);
+    let vat = amount - net;
+
+    generateInvoice(business, net, vat, amount, "Net Price");
+  }
+</script>
+
+</body>
+</html>
